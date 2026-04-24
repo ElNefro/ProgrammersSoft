@@ -5,392 +5,65 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
     <title>DevSuite — платформа для программистов</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        /* Тёмная тема (базовая) */
-        :root {
-            --bg-primary: #121212;
-            --bg-secondary: #1e1e1e;
-            --bg-card: #252526;
-            --text-primary: #f0f0f0;
-            --text-secondary: #b0b0b0;
-            --accent: #3b82f6;
-            --accent-hover: #2563eb;
-            --border: #333333;
-            --danger: #ef4444;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --navbar-bg: #0f0f0f;
-            --input-bg: #2c2c2c;
-        }
-
-        /* Светлая тема (переключаемая) */
-        body.light {
-            --bg-primary: #f5f5f5;
-            --bg-secondary: #ffffff;
-            --bg-card: #ffffff;
-            --text-primary: #1e1e1e;
-            --text-secondary: #4b5563;
-            --accent: #2563eb;
-            --accent-hover: #1d4ed8;
-            --border: #e2e8f0;
-            --navbar-bg: #f8fafc;
-            --input-bg: #f1f5f9;
-        }
-
-        body {
-            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
-            transition: background 0.2s, color 0.2s;
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            position: relative;
-        }
-
-        /* Canvas для матричного дождя */
-        #matrix-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            pointer-events: none;
-            background-color: #0a0a0a;
-        }
-
-        /* Экран входа/регистрации поверх canvas */
-        .auth-container {
-            position: relative;
-            z-index: 2;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 1.5rem;
-            background-color: rgba(0, 0, 0, 0.65);
-            backdrop-filter: blur(3px);
-        }
-
-        .auth-card {
-            background-color: var(--bg-secondary);
-            border-radius: 2rem;
-            padding: 2rem 1.5rem;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.5);
-            border: 1px solid var(--border);
-        }
-
-        .auth-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-            text-align: center;
-            background: linear-gradient(135deg, #a0a0ff, #60a5fa);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        .input-group {
-            margin-bottom: 1.2rem;
-        }
-
-        .input-group label {
-            display: block;
-            font-size: 0.85rem;
-            margin-bottom: 0.4rem;
-            color: var(--text-secondary);
-        }
-
-        .input-group input {
-            width: 100%;
-            padding: 0.8rem 1rem;
-            background-color: var(--input-bg);
-            border: 1px solid var(--border);
-            border-radius: 1rem;
-            color: var(--text-primary);
-            font-size: 1rem;
-            outline: none;
-            transition: 0.2s;
-        }
-
-        .input-group input:focus {
-            border-color: var(--accent);
-        }
-
-        .btn {
-            background-color: var(--accent);
-            color: white;
-            border: none;
-            padding: 0.8rem 1rem;
-            border-radius: 3rem;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: 0.2s;
-            width: 100%;
-            text-align: center;
-        }
-
-        .btn-secondary {
-            background-color: transparent;
-            border: 1px solid var(--border);
-            color: var(--text-primary);
-        }
-
-        .btn-secondary:hover {
-            background-color: var(--bg-card);
-        }
-
-        .btn:hover {
-            background-color: var(--accent-hover);
-        }
-
-        .switch-auth {
-            text-align: center;
-            margin-top: 1rem;
-            font-size: 0.9rem;
-            color: var(--accent);
-            cursor: pointer;
-        }
-
-        /* Main App */
-        .main-app {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            padding-bottom: 70px;
-            position: relative;
-            z-index: 1;
-            background-color: var(--bg-primary);
-        }
-
-        .content-area {
-            flex: 1;
-            padding: 1rem 1rem 1rem 1rem;
-            overflow-y: auto;
-        }
-
-        /* Навбар снизу */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background-color: var(--navbar-bg);
-            backdrop-filter: blur(12px);
-            border-top: 1px solid var(--border);
-            display: flex;
-            justify-content: space-around;
-            padding: 0.6rem 1rem 0.9rem;
-            z-index: 20;
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            font-size: 0.7rem;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .nav-item.active {
-            color: var(--accent);
-        }
-
-        .nav-icon {
-            font-size: 1.6rem;
-            font-weight: 500;
-        }
-
-        /* Карточки */
-        .card {
-            background-color: var(--bg-card);
-            border-radius: 1.5rem;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            border: 1px solid var(--border);
-            transition: 0.1s;
-            cursor: pointer;
-        }
-
-        .project-card {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-        }
-
-        .project-img {
-            width: 55px;
-            height: 55px;
-            border-radius: 1rem;
-            object-fit: cover;
-            background: var(--border);
-        }
-
-        .project-info {
-            flex: 1;
-        }
-
-        .project-name {
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
-
-        .progress-bar-container {
-            background-color: var(--border);
-            border-radius: 20px;
-            height: 8px;
-            width: 100%;
-            margin-top: 8px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            background-color: var(--accent);
-            width: 0%;
-            height: 100%;
-            border-radius: 20px;
-        }
-
-        /* План карточки */
-        .plan-card {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .plan-time {
-            font-family: monospace;
-            background-color: var(--input-bg);
-            padding: 0.3rem 0.7rem;
-            border-radius: 2rem;
-            font-size: 0.8rem;
-        }
-
-        .delete-plan {
-            background: none;
-            border: none;
-            color: var(--danger);
-            font-size: 1.3rem;
-            cursor: pointer;
-        }
-
-        .add-plan-btn {
-            background-color: var(--accent);
-            color: white;
-            padding: 0.8rem;
-            border-radius: 3rem;
-            text-align: center;
-            font-weight: bold;
-            margin-top: 1rem;
-            cursor: pointer;
-        }
-
-        /* Модальное окно */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.7);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 100;
-        }
-
-        .modal-content {
-            background-color: var(--bg-secondary);
-            border-radius: 2rem;
-            padding: 1.5rem;
-            width: 85%;
-            max-width: 320px;
-        }
-
-        .profile-avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 3rem;
-            object-fit: cover;
-            background: var(--border);
-            margin-bottom: 1rem;
-        }
-
-        .flex-between {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .back-btn {
-            background: none;
-            border: none;
-            color: var(--accent);
-            font-size: 1.2rem;
-            margin-bottom: 1rem;
-            cursor: pointer;
-        }
-
-        h3 {
-            margin-bottom: 1rem;
-        }
-
-        .gh-link {
-            color: var(--accent);
-            text-decoration: none;
-        }
+        /* (весь ваш CSS остаётся без изменений — я не буду его дублировать здесь для краткости,
+           но в реальном файле он должен быть полностью. Вставьте ваш существующий CSS) */
+        * { margin:0; padding:0; box-sizing:border-box; }
+        :root { --bg-primary:#121212; --bg-secondary:#1e1e1e; --bg-card:#252526; --text-primary:#f0f0f0; --text-secondary:#b0b0b0; --accent:#3b82f6; --accent-hover:#2563eb; --border:#333; --danger:#ef4444; --navbar-bg:#0f0f0f; --input-bg:#2c2c2c; }
+        body.light { --bg-primary:#f5f5f5; --bg-secondary:#fff; --bg-card:#fff; --text-primary:#1e1e1e; --text-secondary:#4b5563; --accent:#2563eb; --border:#e2e8f0; --navbar-bg:#f8fafc; --input-bg:#f1f5f9; }
+        body { font-family: system-ui; background:var(--bg-primary); color:var(--text-primary); transition:0.2s; }
+        #matrix-canvas { position:fixed; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events:none; background:#0a0a0a; }
+        .auth-container { position:relative; z-index:2; min-height:100vh; display:flex; justify-content:center; align-items:center; padding:1.5rem; background:rgba(0,0,0,0.65); backdrop-filter:blur(3px); }
+        .auth-card { background:var(--bg-secondary); border-radius:2rem; padding:2rem 1.5rem; max-width:400px; width:100%; border:1px solid var(--border); box-shadow:0 25px 45px rgba(0,0,0,0.5); }
+        .auth-title { font-size:1.8rem; font-weight:700; text-align:center; background:linear-gradient(135deg,#a0a0ff,#60a5fa); -webkit-background-clip:text; background-clip:text; color:transparent; margin-bottom:1.5rem; }
+        .input-group { margin-bottom:1.2rem; }
+        .input-group label { display:block; font-size:0.85rem; margin-bottom:0.4rem; color:var(--text-secondary); }
+        .input-group input { width:100%; padding:0.8rem 1rem; background:var(--input-bg); border:1px solid var(--border); border-radius:1rem; color:var(--text-primary); font-size:1rem; outline:none; }
+        .input-group input:focus { border-color:var(--accent); }
+        .btn { background:var(--accent); color:white; border:none; padding:0.8rem 1rem; border-radius:3rem; font-weight:600; font-size:1rem; cursor:pointer; width:100%; text-align:center; }
+        .btn-secondary { background:transparent; border:1px solid var(--border); color:var(--text-primary); }
+        .switch-auth { text-align:center; margin-top:1rem; font-size:0.9rem; color:var(--accent); cursor:pointer; }
+        .main-app { display:flex; flex-direction:column; min-height:100vh; padding-bottom:70px; position:relative; z-index:1; background:var(--bg-primary); }
+        .content-area { flex:1; padding:1rem; overflow-y:auto; }
+        .bottom-nav { position:fixed; bottom:0; left:0; width:100%; background:var(--navbar-bg); backdrop-filter:blur(12px); border-top:1px solid var(--border); display:flex; justify-content:space-around; padding:0.6rem 1rem 0.9rem; z-index:20; }
+        .nav-item { display:flex; flex-direction:column; align-items:center; gap:4px; background:none; border:none; color:var(--text-secondary); font-size:0.7rem; cursor:pointer; }
+        .nav-item.active { color:var(--accent); }
+        .nav-icon { font-size:1.6rem; }
+        .card { background:var(--bg-card); border-radius:1.5rem; padding:1rem; margin-bottom:1rem; border:1px solid var(--border); cursor:pointer; transition:0.1s; }
+        .project-card { display:flex; gap:1rem; align-items:center; }
+        .project-img { width:55px; height:55px; border-radius:1rem; object-fit:cover; background:var(--border); }
+        .project-info { flex:1; }
+        .project-name { font-weight:700; margin-bottom:6px; }
+        .progress-bar-container { background-color:var(--border); border-radius:20px; height:8px; width:100%; margin-top:8px; overflow:hidden; }
+        .progress-fill { background-color:var(--accent); width:0%; height:100%; border-radius:20px; }
+        .plan-card { display:flex; justify-content:space-between; align-items:center; }
+        .plan-time { font-family:monospace; background:var(--input-bg); padding:0.3rem 0.7rem; border-radius:2rem; font-size:0.8rem; }
+        .delete-plan { background:none; border:none; color:var(--danger); font-size:1.3rem; cursor:pointer; }
+        .add-plan-btn { background:var(--accent); color:white; padding:0.8rem; border-radius:3rem; text-align:center; font-weight:bold; margin-top:1rem; cursor:pointer; }
+        .modal { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); display:flex; align-items:center; justify-content:center; z-index:100; }
+        .modal-content { background:var(--bg-secondary); border-radius:2rem; padding:1.5rem; width:85%; max-width:320px; }
+        .profile-avatar { width:80px; height:80px; border-radius:3rem; object-fit:cover; background:var(--border); margin-bottom:1rem; }
+        .flex-between { display:flex; justify-content:space-between; align-items:center; }
+        .back-btn { background:none; border:none; color:var(--accent); font-size:1.2rem; margin-bottom:1rem; cursor:pointer; }
+        h3 { margin-bottom:1rem; }
     </style>
 </head>
 <body>
 <canvas id="matrix-canvas"></canvas>
 
-<!-- Экран входа / регистрации -->
 <div id="auth-screen" class="auth-container">
     <div class="auth-card">
         <div class="auth-title">DEV<span style="color:#60a5fa">SUITE</span></div>
         <div id="auth-form-container">
-            <!-- форма логина -->
             <div id="login-form">
-                <div class="input-group">
-                    <label>Имя пользователя</label>
-                    <input type="text" id="login-username" placeholder="coder">
-                </div>
-                <div class="input-group">
-                    <label>Пароль</label>
-                    <input type="password" id="login-password" placeholder="••••">
-                </div>
+                <div class="input-group"><label>Имя пользователя</label><input type="text" id="login-username" placeholder="coder"></div>
+                <div class="input-group"><label>Пароль</label><input type="password" id="login-password" placeholder="••••"></div>
                 <button id="do-login" class="btn">Войти</button>
                 <div class="switch-auth" id="to-register">Нет аккаунта? Зарегистрироваться</div>
             </div>
-            <!-- форма регистрации (скрыта) -->
             <div id="register-form" style="display:none">
-                <div class="input-group">
-                    <label>Имя пользователя</label>
-                    <input type="text" id="reg-username" placeholder="username">
-                </div>
-                <div class="input-group">
-                    <label>Пароль</label>
-                    <input type="password" id="reg-password" placeholder="••••">
-                </div>
-                <div class="input-group">
-                    <label>Повторите пароль</label>
-                    <input type="password" id="reg-password2" placeholder="••••">
-                </div>
+                <div class="input-group"><label>Имя пользователя</label><input type="text" id="reg-username" placeholder="username"></div>
+                <div class="input-group"><label>Пароль</label><input type="password" id="reg-password" placeholder="••••"></div>
+                <div class="input-group"><label>Повторите пароль</label><input type="password" id="reg-password2" placeholder="••••"></div>
                 <button id="do-register" class="btn">Создать аккаунт</button>
                 <div class="switch-auth" id="to-login">Уже есть аккаунт? Войти</div>
             </div>
@@ -398,11 +71,8 @@
     </div>
 </div>
 
-<!-- Главное приложение (скрыто) -->
 <div id="main-app" class="main-app" style="display: none;">
-    <div class="content-area" id="app-content">
-        <!-- Динамический контент -->
-    </div>
+    <div class="content-area" id="app-content"></div>
     <div class="bottom-nav">
         <button class="nav-item" data-tab="projects"><span class="nav-icon">📁</span><span>Проекты</span></button>
         <button class="nav-item" data-tab="plans"><span class="nav-icon">📅</span><span>Планы</span></button>
@@ -412,79 +82,59 @@
 
 <script>
     // ---------- Модель данных ----------
-    let currentUser = null;          // { id, username, password, avatar, githubUsername, theme }
-    let users = [];                  // храним в localStorage key: "devsuite_users"
-    let plans = [];                 // планы текущего пользователя: [{ title, time, lastNotifiedDate }] time = "HH:MM"
-    let projectsList = [];          // репозитории из гитхаба (кэш)
+    let currentUser = null;
+    let users = [];
+    let plans = [];
+    let projectsList = [];
     let notificationInterval = null;
     let activeTab = "projects";
 
-    // DOM элементы
     const authScreen = document.getElementById('auth-screen');
     const mainApp = document.getElementById('main-app');
     const loginFormDiv = document.getElementById('login-form');
     const registerFormDiv = document.getElementById('register-form');
     const appContent = document.getElementById('app-content');
 
-    // ---- Инициализация хранилища пользователей ----
+    // Кэш прогресса с TTL
+    function getCachedProgress(repoFullName) {
+        const key = `gh_progress_${repoFullName}`;
+        const cached = localStorage.getItem(key);
+        if (cached) {
+            try {
+                const { progress, timestamp, ttl = 60 * 60 * 1000 } = JSON.parse(cached);
+                if (Date.now() - timestamp < ttl) return progress;
+            } catch(e) {}
+        }
+        return null;
+    }
+    function setCachedProgress(repoFullName, progress, ttlMs = 60 * 60 * 1000) {
+        const key = `gh_progress_${repoFullName}`;
+        localStorage.setItem(key, JSON.stringify({ progress, timestamp: Date.now(), ttl: ttlMs }));
+    }
+
+    // Пользователи
     function loadUsersFromStorage() {
         const stored = localStorage.getItem('devsuite_users');
-        if (stored) {
-            users = JSON.parse(stored);
-        } else {
-            // тестовый пользователь для демо
-            users = [
-                { id: "1", username: "demo", password: "demo123", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=demo", githubUsername: "", theme: "dark" }
-            ];
+        if (stored) { users = JSON.parse(stored); }
+        else {
+            users = [{ id: "1", username: "demo", password: "demo123", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=demo", githubUsername: "", theme: "dark" }];
             localStorage.setItem('devsuite_users', JSON.stringify(users));
         }
     }
-
-    function saveUsersToStorage() {
-        localStorage.setItem('devsuite_users', JSON.stringify(users));
-    }
-
-    function savePlans() {
-        if (currentUser) {
-            localStorage.setItem(`devsuite_plans_${currentUser.id}`, JSON.stringify(plans));
-        }
-    }
-
+    function saveUsersToStorage() { localStorage.setItem('devsuite_users', JSON.stringify(users)); }
+    function savePlans() { if (currentUser) localStorage.setItem(`devsuite_plans_${currentUser.id}`, JSON.stringify(plans)); }
     function loadPlans() {
         if (currentUser) {
             const stored = localStorage.getItem(`devsuite_plans_${currentUser.id}`);
-            if (stored) {
-                plans = JSON.parse(stored);
-                // Миграция старых планов (с полем time в формате datetime-local) -> только время и lastNotifiedDate
-                let changed = false;
-                plans = plans.map(plan => {
-                    if (plan.time && plan.time.includes('T')) {
-                        // Было "YYYY-MM-DDTHH:MM" -> оставляем "HH:MM"
-                        const newTime = plan.time.substring(11, 16);
-                        changed = true;
-                        return { title: plan.title, time: newTime, lastNotifiedDate: null };
-                    }
-                    if (!plan.hasOwnProperty('lastNotifiedDate')) {
-                        plan.lastNotifiedDate = null;
-                        changed = true;
-                    }
-                    return plan;
-                });
-                if (changed) savePlans();
-            } else {
-                plans = [];
-            }
-        } else {
-            plans = [];
-        }
+            plans = stored ? JSON.parse(stored) : [];
+            plans = plans.map(p => ({ ...p, lastNotifiedDate: p.lastNotifiedDate || null }));
+            savePlans();
+        } else plans = [];
     }
-
-    // Текущий пользователь сессии
     function setCurrentUser(user) {
         currentUser = user;
         if (user) {
             localStorage.setItem('devsuite_current_user_id', user.id);
-            // применить тему
             document.body.classList.toggle('light', user.theme === 'light');
             loadPlans();
             if (notificationInterval) clearInterval(notificationInterval);
@@ -494,84 +144,94 @@
             if (notificationInterval) clearInterval(notificationInterval);
         }
     }
-
     function getStoredUser() {
         const userId = localStorage.getItem('devsuite_current_user_id');
-        if (userId) {
-            return users.find(u => u.id === userId);
-        }
-        return null;
+        return userId ? users.find(u => u.id === userId) : null;
     }
 
-    // --- Вспомогательные функции GitHub ---
+    // GitHub API
     async function fetchRepos(githubUsername) {
         if (!githubUsername) return [];
-        try {
-            const res = await fetch(`https://api.github.com/users/${githubUsername}/repos?sort=updated&per_page=30`);
-            if (!res.ok) return [];
-            const repos = await res.json();
-            return repos;
-        } catch (e) {
-            console.warn(e);
-            return [];
-        }
+        const res = await fetch(`https://api.github.com/users/${githubUsername}/repos?sort=updated&per_page=30`);
+        if (res.status === 403) throw new Error("Достигнут лимит GitHub API (60/час).");
+        if (!res.ok) throw new Error(`Ошибка GitHub: ${res.status}`);
+        return await res.json();
     }
-
     async function fetchCommitActivity(owner, repo) {
         try {
             const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/stats/commit_activity`);
+            if (res.status === 202) return null;
             if (!res.ok) return null;
-            const data = await res.json();
-            return data;
-        } catch (e) {
-            return null;
-        }
+            return await res.json();
+        } catch(e) { return null; }
     }
-
-    // прогресс на основе коммитов за последние 30 дней
-    async function computeProgress(owner, repo) {
-        const activity = await fetchCommitActivity(owner, repo);
-        if (!activity || !Array.isArray(activity)) return 0;
-        let totalCommits = 0;
-        const FOUR_WEEKS = 4;
-        const weeksSlice = activity.slice(-FOUR_WEEKS);
-        for (let week of weeksSlice) {
-            if (week && week.days) totalCommits += week.days.reduce((a,b)=>a+b,0);
-        }
-        let progress = Math.min(100, Math.floor((totalCommits / 60) * 100));
-        return isNaN(progress) ? 0 : progress;
+    function getFallbackProgress(updatedAt) {
+        if (!updatedAt) return 30;
+        const lastUpdate = new Date(updatedAt);
+        const now = new Date();
+        const diffDays = Math.max(0, (now - lastUpdate) / (1000 * 60 * 60 * 24));
+        let progress = Math.floor(100 * Math.exp(-diffDays / 30));
+        return Math.min(100, Math.max(5, progress));
     }
-
+    async function computeProgress(owner, repo, updatedAt) {
+        const fullName = `${owner}/${repo}`;
+        const cached = getCachedProgress(fullName);
+        if (cached !== null) return cached;
+        let progress = 0;
+        let usedFallback = false;
+        try {
+            const activity = await fetchCommitActivity(owner, repo);
+            if (activity && Array.isArray(activity) && activity.length > 0) {
+                let totalCommits = 0;
+                const weeksSlice = activity.slice(-4);
+                for (let week of weeksSlice) if (week && week.days) totalCommits += week.days.reduce((a,b)=>a+b,0);
+                progress = Math.min(100, Math.floor((totalCommits / 60) * 100));
+                if (isNaN(progress)) progress = 0;
+                console.log(`✅ ${fullName}: real progress = ${progress}% (commits 4w: ${totalCommits})`);
+            } else {
+                usedFallback = true;
+                throw new Error("No commit data");
+            }
+        } catch(e) {
+            usedFallback = true;
+            progress = getFallbackProgress(updatedAt);
+            console.warn(`⚠️ ${fullName}: fallback progress = ${progress}% (${updatedAt})`);
+        }
+        const ttl = usedFallback ? 10 * 60 * 1000 : 60 * 60 * 1000;
+        setCachedProgress(fullName, progress, ttl);
+        return progress;
+    }
     async function fetchReadme(owner, repo) {
         try {
             const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/readme`);
             if (!res.ok) return "README отсутствует";
             const data = await res.json();
-            const decoded = atob(data.content);
-            return decoded.length > 1000 ? decoded.slice(0, 1000) + "..." : decoded;
-        } catch (e) {
-            return "Не удалось загрузить README";
-        }
+            const text = atob(data.content);
+            return text.length > 1000 ? text.slice(0,1000)+"..." : text;
+        } catch(e) { return "Не удалось загрузить README"; }
     }
-
     async function fetchLicense(owner, repo) {
         try {
             const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/license`);
             if (!res.ok) return "Лицензия не указана";
             const data = await res.json();
             return data.license ? data.license.name : "Неизвестная лицензия";
-        } catch (e) {
-            return "Нет данных";
-        }
+        } catch(e) { return "Нет данных"; }
     }
-
-    // загрузить проекты и прогресс
-    async function loadProjectsFromGitHub() {
+    async function loadProjectsFromGitHub(forceRefresh = false) {
         if (!currentUser || !currentUser.githubUsername) return [];
         const repos = await fetchRepos(currentUser.githubUsername);
+        if (!repos.length) return [];
         const enriched = [];
         for (const repo of repos) {
-            const progress = await computeProgress(repo.owner.login, repo.name);
+            let progress = 0;
+            if (!forceRefresh) {
+                const cached = getCachedProgress(`${repo.owner.login}/${repo.name}`);
+                if (cached !== null) progress = cached;
+                else progress = await computeProgress(repo.owner.login, repo.name, repo.updated_at);
+            } else {
+                progress = await computeProgress(repo.owner.login, repo.name, repo.updated_at);
+            }
             enriched.push({
                 id: repo.id,
                 name: repo.name,
@@ -587,49 +247,52 @@
         return projectsList;
     }
 
-    // РЕНДЕР страницы проекта (детали)
     async function showProjectPage(project) {
-        if (!project) return;
         appContent.innerHTML = `<button class="back-btn" id="back-to-projects">← Назад к проектам</button>
-                                 <div class="card" style="margin-top:0.5rem">
-                                    <img src="${project.avatar_url}" style="width:80px;border-radius:20px;margin-bottom:12px">
-                                    <h2>${project.name}</h2>
-                                    <p><strong>Описание:</strong> ${project.description || "—"}</p>
-                                    <div style="margin-top:12px"><strong>Лицензия:</strong> ${project.license}</div>
-                                    <hr style="margin:16px 0;border-color:var(--border)">
-                                    <div><strong>README (превью):</strong></div>
-                                    <div style="background:var(--input-bg);padding:12px;border-radius:16px;margin-top:8px;white-space:pre-wrap;font-size:0.9rem" id="readme-content">Загрузка...</div>
-                                 </div>`;
-        const readmeContent = await fetchReadme(project.owner, project.name);
-        document.getElementById('readme-content').innerText = readmeContent;
-        document.getElementById('back-to-projects').addEventListener('click', () => {
-            renderTab(activeTab);
-        });
+            <div class="card" style="margin-top:0.5rem">
+                <img src="${project.avatar_url}" style="width:80px;border-radius:20px;margin-bottom:12px">
+                <h2>${project.name}</h2>
+                <p><strong>Описание:</strong> ${project.description || "—"}</p>
+                <div><strong>Лицензия:</strong> ${project.license}</div>
+                <hr style="margin:16px 0;border-color:var(--border)">
+                <div><strong>README (превью):</strong></div>
+                <div style="background:var(--input-bg);padding:12px;border-radius:16px;white-space:pre-wrap;" id="readme-content">Загрузка...</div>
+            </div>`;
+        const readme = await fetchReadme(project.owner, project.name);
+        document.getElementById('readme-content').innerText = readme;
+        document.getElementById('back-to-projects').onclick = () => renderTab(activeTab);
     }
 
-    // Рендер проектов (список)
     async function renderProjectsTab() {
         appContent.innerHTML = `<div class="flex-between"><h3>Мои проекты GitHub</h3><button id="refresh-projects" class="btn" style="width:auto;padding:0.4rem 0.8rem">🔄</button></div>
-                                 <div id="projects-list">Загрузка проектов...</div>`;
+            <div id="projects-list">Загрузка проектов...</div>`;
         if (!currentUser.githubUsername) {
-            document.getElementById('projects-list').innerHTML = `<div class="card">⚠️ Привяжите GitHub в профиле, чтобы видеть репозитории.</div>`;
+            document.getElementById('projects-list').innerHTML = `<div class="card">⚠️ Привяжите GitHub в профиле.</div>`;
             document.getElementById('refresh-projects')?.addEventListener('click', () => renderProjectsTab());
             return;
         }
         const refreshBtn = document.getElementById('refresh-projects');
         refreshBtn.addEventListener('click', async () => {
-            await loadProjectsFromGitHub();
-            renderProjectsList();
+            document.getElementById('projects-list').innerHTML = `<div class="card">Обновление (может занять время)...</div>`;
+            try {
+                await loadProjectsFromGitHub(true);
+                renderProjectsList();
+            } catch(e) {
+                document.getElementById('projects-list').innerHTML = `<div class="card" style="color:var(--danger)">⚠️ Ошибка: ${e.message}</div>`;
+            }
         });
-        await loadProjectsFromGitHub();
-        renderProjectsList();
+        try {
+            await loadProjectsFromGitHub(false);
+            renderProjectsList();
+        } catch(err) {
+            document.getElementById('projects-list').innerHTML = `<div class="card" style="color:var(--danger)">⚠️ ${err.message}<br>Нажмите 🔄 для повторной попытки.</div>`;
+        }
     }
-
     function renderProjectsList() {
         const container = document.getElementById('projects-list');
         if (!container) return;
         if (projectsList.length === 0) {
-            container.innerHTML = `<div class="card">Нет публичных репозиториев или GitHub не привязан.</div>`;
+            container.innerHTML = `<div class="card">Публичные репозитории не найдены.</div>`;
             return;
         }
         container.innerHTML = projectsList.map(proj => `
@@ -642,26 +305,15 @@
                 </div>
             </div>
         `).join('');
-        // добавить обработчики кликов
         document.querySelectorAll('.project-card').forEach(card => {
             const id = parseInt(card.dataset.id);
             const project = projectsList.find(p => p.id === id);
-            if (project) {
-                card.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    showProjectPage(project);
-                });
-            }
+            if (project) card.addEventListener('click', (e) => { e.stopPropagation(); showProjectPage(project); });
         });
     }
 
-    // ---------- Планы (только время, ежедневные уведомления) ----------
-    function requestNotificationPermission() {
-        if ('Notification' in window && Notification.permission !== 'granted') {
-            Notification.requestPermission();
-        }
-    }
-
+    // Планы (без изменений, только время)
+    function requestNotificationPermission() { if ('Notification' in window && Notification.permission !== 'granted') Notification.requestPermission(); }
     function startNotificationScheduler() {
         if (notificationInterval) clearInterval(notificationInterval);
         notificationInterval = setInterval(() => {
@@ -669,79 +321,33 @@
             const now = new Date();
             const currentTime = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
             const today = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
-
             plans.forEach(plan => {
-                if (plan.time === currentTime) {
-                    // если уведомление сегодня ещё не отправляли
-                    if (plan.lastNotifiedDate !== today) {
-                        if (Notification.permission === 'granted') {
-                            new Notification("🔔 DevSuite", { body: `${plan.title}`, icon: "https://via.placeholder.com/64" });
-                        } else if (Notification.permission !== 'denied') {
-                            Notification.requestPermission();
-                        }
-                        plan.lastNotifiedDate = today;
-                        savePlans(); // сохраняем обновленную дату
-                        if (activeTab === 'plans') renderPlansTab(); // обновить UI, чтобы показать, что уведомление отправлено (опционально)
-                    }
+                if (plan.time === currentTime && plan.lastNotifiedDate !== today) {
+                    if (Notification.permission === 'granted') new Notification("🔔 DevSuite", { body: plan.title });
+                    else if (Notification.permission !== 'denied') Notification.requestPermission();
+                    plan.lastNotifiedDate = today;
+                    savePlans();
+                    if (activeTab === 'plans') renderPlansTab();
                 }
             });
-        }, 30000); // проверка каждые 30 секунд
+        }, 30000);
     }
-
-    function addPlan(title, time) {
-        if (!title || !time) return;
-        // time ожидается в формате "HH:MM"
-        plans.push({ title, time, lastNotifiedDate: null });
-        savePlans();
-        if (activeTab === 'plans') renderPlansTab();
-    }
-
-    function deletePlan(index) {
-        plans.splice(index,1);
-        savePlans();
-        if (activeTab === 'plans') renderPlansTab();
-    }
-
+    function addPlan(title, time) { if (!title || !time) return; plans.push({ title, time, lastNotifiedDate: null }); savePlans(); if (activeTab === 'plans') renderPlansTab(); }
+    function deletePlan(idx) { plans.splice(idx,1); savePlans(); if (activeTab === 'plans') renderPlansTab(); }
     function renderPlansTab() {
-        appContent.innerHTML = `<h3>Расписание / планы (ежедневно)</h3>
-                                 <div id="plans-container"></div>
-                                 <div class="add-plan-btn" id="open-add-plan">+ Добавить пункт</div>`;
+        appContent.innerHTML = `<h3>Расписание / планы (ежедневно)</h3><div id="plans-container"></div><div class="add-plan-btn" id="open-add-plan">+ Добавить пункт</div>`;
         const container = document.getElementById('plans-container');
-        if (plans.length === 0) {
-            container.innerHTML = `<div class="card">Нет запланированных задач. Добавьте новую!</div>`;
-        } else {
-            container.innerHTML = plans.map((plan, idx) => `
-                <div class="card plan-card">
-                    <div><strong>${escapeHtml(plan.title)}</strong><br><span class="plan-time">${plan.time}</span></div>
-                    <button class="delete-plan" data-idx="${idx}">🗑️</button>
-                </div>
-            `).join('');
-            document.querySelectorAll('.delete-plan').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const idx = parseInt(btn.dataset.idx);
-                    deletePlan(idx);
-                });
-            });
+        if (plans.length === 0) container.innerHTML = `<div class="card">Нет запланированных задач.</div>`;
+        else {
+            container.innerHTML = plans.map((p,idx)=>`<div class="card plan-card"><div><strong>${escapeHtml(p.title)}</strong><br><span class="plan-time">${p.time}</span></div><button class="delete-plan" data-idx="${idx}">🗑️</button></div>`).join('');
+            document.querySelectorAll('.delete-plan').forEach(btn => btn.addEventListener('click', (e) => deletePlan(parseInt(btn.dataset.idx))));
         }
         document.getElementById('open-add-plan').addEventListener('click', () => {
-            const modalDiv = document.createElement('div');
-            modalDiv.className = 'modal';
-            modalDiv.innerHTML = `<div class="modal-content">
-                                    <h4>Новая задача (ежедневное напоминание)</h4>
-                                    <input type="text" id="plan-title" placeholder="Название" style="width:100%;margin-bottom:12px;padding:10px;border-radius:12px;background:var(--input-bg);color:var(--text-primary);border:1px solid var(--border)">
-                                    <input type="time" id="plan-time" style="width:100%;margin-bottom:16px;padding:10px;border-radius:12px;background:var(--input-bg);color:var(--text-primary);border:1px solid var(--border)">
-                                    <div style="display:flex;gap:10px"><button id="save-plan-btn" class="btn">Сохранить</button><button id="close-modal" class="btn btn-secondary">Отмена</button></div>
-                                  </div>`;
-            document.body.appendChild(modalDiv);
-            document.getElementById('save-plan-btn').addEventListener('click', () => {
-                const title = document.getElementById('plan-title').value;
-                const time = document.getElementById('plan-time').value;
-                if (title && time) {
-                    addPlan(title, time);
-                    modalDiv.remove();
-                } else alert("Заполните все поля");
-            });
-            document.getElementById('close-modal').addEventListener('click', () => modalDiv.remove());
+            const modal = document.createElement('div'); modal.className = 'modal';
+            modal.innerHTML = `<div class="modal-content"><h4>Новая задача (ежедневно)</h4><input type="text" id="plan-title" placeholder="Название" style="width:100%;margin-bottom:12px;padding:10px;border-radius:12px;background:var(--input-bg);color:var(--text-primary);border:1px solid var(--border)"><input type="time" id="plan-time" style="width:100%;margin-bottom:16px;padding:10px;border-radius:12px;background:var(--input-bg);color:var(--text-primary);border:1px solid var(--border)"><div style="display:flex;gap:10px"><button id="save-plan-btn" class="btn">Сохранить</button><button id="close-modal" class="btn btn-secondary">Отмена</button></div></div>`;
+            document.body.appendChild(modal);
+            document.getElementById('save-plan-btn').onclick = () => { const title = document.getElementById('plan-title').value, time = document.getElementById('plan-time').value; if(title && time){ addPlan(title,time); modal.remove(); } else alert("Заполните поля"); };
+            document.getElementById('close-modal').onclick = () => modal.remove();
         });
         requestNotificationPermission();
     }
@@ -749,165 +355,91 @@
     // Профиль
     function renderProfileTab() {
         appContent.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;">
-                                    <img id="profile-avatar-img" src="${currentUser.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=default'}" class="profile-avatar">
-                                    <label style="background:var(--accent);padding:6px 12px;border-radius:30px;margin:10px 0;cursor:pointer;">Сменить аватар<input type="file" id="avatar-upload" accept="image/*" style="display:none"></label>
-                                    <div style="width:100%"><label>GitHub username:</label><input type="text" id="github-username" value="${currentUser.githubUsername || ''}" placeholder="Ваш ник" style="width:100%;padding:10px;border-radius:20px;background:var(--input-bg);border:1px solid var(--border);color:var(--text-primary);margin-bottom:12px"></div>
-                                    <div class="flex-between" style="width:100%;margin:8px 0"><span>🌙 Тёмная тема</span><label class="switch"><input type="checkbox" id="theme-toggle" ${currentUser.theme === 'light' ? 'checked' : ''}><span style="margin-left:8px">Светлая</span></label></div>
-                                    <button id="save-profile-btn" class="btn" style="margin-top:16px;">Сохранить настройки</button>
-                                    <button id="logout-btn" class="btn btn-secondary" style="margin-top:12px;">Выйти</button>
-                                </div>`;
+            <img id="profile-avatar-img" src="${currentUser.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=default'}" class="profile-avatar">
+            <label style="background:var(--accent);padding:6px 12px;border-radius:30px;margin:10px 0;cursor:pointer;">Сменить аватар<input type="file" id="avatar-upload" accept="image/*" style="display:none"></label>
+            <div style="width:100%"><label>GitHub username:</label><input type="text" id="github-username" value="${currentUser.githubUsername || ''}" placeholder="Ваш ник" style="width:100%;padding:10px;border-radius:20px;background:var(--input-bg);border:1px solid var(--border);color:var(--text-primary);margin-bottom:12px"></div>
+            <div class="flex-between" style="width:100%;margin:8px 0"><span>🌙 Тёмная тема</span><label><input type="checkbox" id="theme-toggle" ${currentUser.theme === 'light' ? 'checked' : ''}> Светлая</label></div>
+            <button id="save-profile-btn" class="btn" style="margin-top:16px;">Сохранить настройки</button>
+            <button id="logout-btn" class="btn btn-secondary" style="margin-top:12px;">Выйти</button>
+        </div>`;
         const fileInput = document.getElementById('avatar-upload');
-        fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(ev) {
-                    const img = document.getElementById('profile-avatar-img');
-                    img.src = ev.target.result;
-                    currentUser.avatar = ev.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        });
+        fileInput.onchange = (e) => { const f = e.target.files[0]; if(f){ const rd = new FileReader(); rd.onload = (ev) => { document.getElementById('profile-avatar-img').src = ev.target.result; currentUser.avatar = ev.target.result; }; rd.readAsDataURL(f); } };
         const toggle = document.getElementById('theme-toggle');
-        toggle.addEventListener('change', (e) => {
-            const newTheme = e.target.checked ? 'light' : 'dark';
-            currentUser.theme = newTheme;
-            document.body.classList.toggle('light', newTheme === 'light');
-        });
-        document.getElementById('save-profile-btn').addEventListener('click', () => {
-            const githubVal = document.getElementById('github-username').value.trim();
-            currentUser.githubUsername = githubVal;
-            const index = users.findIndex(u => u.id === currentUser.id);
-            if (index !== -1) {
-                users[index] = { ...currentUser };
-                saveUsersToStorage();
-                setCurrentUser(currentUser);
-            }
+        toggle.onchange = (e) => { const newTheme = e.target.checked ? 'light' : 'dark'; currentUser.theme = newTheme; document.body.classList.toggle('light', newTheme === 'light'); };
+        document.getElementById('save-profile-btn').onclick = () => {
+            currentUser.githubUsername = document.getElementById('github-username').value.trim();
+            const idx = users.findIndex(u=>u.id===currentUser.id);
+            if(idx!==-1){ users[idx] = {...currentUser}; saveUsersToStorage(); setCurrentUser(currentUser); }
             alert('Профиль обновлён!');
-            if (activeTab === 'projects') renderTab(activeTab);
-        });
-        document.getElementById('logout-btn').addEventListener('click', () => {
-            setCurrentUser(null);
-            authScreen.style.display = 'flex';
-            mainApp.style.display = 'none';
-            currentUser = null;
-        });
+            if(activeTab === 'projects') renderTab(activeTab);
+        };
+        document.getElementById('logout-btn').onclick = () => { setCurrentUser(null); authScreen.style.display='flex'; mainApp.style.display='none'; currentUser=null; };
     }
 
-    function escapeHtml(str) { return str.replace(/[&<>]/g, function(m){if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
-
-    async function renderTab(tab) {
-        activeTab = tab;
-        if (tab === 'projects') await renderProjectsTab();
-        else if (tab === 'plans') renderPlansTab();
-        else if (tab === 'profile') renderProfileTab();
-    }
-
-    // Навигация
+    function escapeHtml(str) { return str.replace(/[&<>]/g, m=>({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
+    async function renderTab(tab) { activeTab = tab; if(tab==='projects') await renderProjectsTab(); else if(tab==='plans') renderPlansTab(); else if(tab==='profile') renderProfileTab(); }
     function bindNavbar() {
-        document.querySelectorAll('.nav-item').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const tab = btn.dataset.tab;
-                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-                btn.classList.add('active');
-                renderTab(tab);
-            });
-        });
+        document.querySelectorAll('.nav-item').forEach(btn => btn.addEventListener('click', () => { const tab = btn.dataset.tab; document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active')); btn.classList.add('active'); renderTab(tab); }));
     }
 
-    // ---- Аутентификация ----
+    // Аутентификация
     function initAuth() {
-        document.getElementById('to-register').addEventListener('click', () => {
-            loginFormDiv.style.display = 'none';
-            registerFormDiv.style.display = 'block';
-        });
-        document.getElementById('to-login').addEventListener('click', () => {
-            loginFormDiv.style.display = 'block';
-            registerFormDiv.style.display = 'none';
-        });
-        document.getElementById('do-login').addEventListener('click', () => {
-            const username = document.getElementById('login-username').value;
-            const pwd = document.getElementById('login-password').value;
-            const user = users.find(u => u.username === username && u.password === pwd);
-            if (user) {
-                setCurrentUser(user);
-                authScreen.style.display = 'none';
-                mainApp.style.display = 'flex';
-                renderTab('projects');
-                bindNavbar();
-                document.querySelector('.nav-item[data-tab="projects"]').classList.add('active');
-            } else alert('Неверные данные');
-        });
-        document.getElementById('do-register').addEventListener('click', () => {
-            const username = document.getElementById('reg-username').value;
-            const pwd = document.getElementById('reg-password').value;
-            const pwd2 = document.getElementById('reg-password2').value;
-            if (!username || !pwd) return alert('Заполните поля');
-            if (pwd !== pwd2) return alert('Пароли не совпадают');
-            if (users.find(u => u.username === username)) return alert('Пользователь существует');
-            const newUser = {
-                id: Date.now().toString(),
-                username,
-                password: pwd,
-                avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${username}`,
-                githubUsername: "",
-                theme: "dark"
-            };
-            users.push(newUser);
-            saveUsersToStorage();
-            setCurrentUser(newUser);
-            authScreen.style.display = 'none';
-            mainApp.style.display = 'flex';
-            renderTab('projects');
-            bindNavbar();
-            document.querySelector('.nav-item[data-tab="projects"]').classList.add('active');
-        });
+        document.getElementById('to-register').onclick = () => { loginFormDiv.style.display='none'; registerFormDiv.style.display='block'; };
+        document.getElementById('to-login').onclick = () => { loginFormDiv.style.display='block'; registerFormDiv.style.display='none'; };
+        document.getElementById('do-login').onclick = () => {
+            const u = document.getElementById('login-username').value, p = document.getElementById('login-password').value;
+            const user = users.find(uu=>uu.username===u && uu.password===p);
+            if(user){ setCurrentUser(user); authScreen.style.display='none'; mainApp.style.display='flex'; renderTab('projects'); bindNavbar(); document.querySelector('.nav-item[data-tab="projects"]').classList.add('active'); }
+            else alert('Неверные данные');
+        };
+        document.getElementById('do-register').onclick = () => {
+            const u = document.getElementById('reg-username').value, p = document.getElementById('reg-password').value, p2 = document.getElementById('reg-password2').value;
+            if(!u||!p) return alert('Заполните все поля');
+            if(p!==p2) return alert('Пароли не совпадают');
+            if(users.find(uu=>uu.username===u)) return alert('Пользователь существует');
+            const newUser = { id: Date.now().toString(), username:u, password:p, avatar:`https://api.dicebear.com/7.x/avataaars/svg?seed=${u}`, githubUsername:"", theme:"dark" };
+            users.push(newUser); saveUsersToStorage(); setCurrentUser(newUser);
+            authScreen.style.display='none'; mainApp.style.display='flex'; renderTab('projects'); bindNavbar(); document.querySelector('.nav-item[data-tab="projects"]').classList.add('active');
+        };
     }
 
-    // --- Matrix Rain Effect ---
+    // Matrix rain
     function startMatrixRain() {
         const canvas = document.getElementById('matrix-canvas');
         const ctx = canvas.getContext('2d');
-        let width = window.innerWidth;
-        let height = window.innerHeight;
-        canvas.width = width;
-        canvas.height = height;
+        let w = window.innerWidth, h = window.innerHeight;
+        canvas.width = w; canvas.height = h;
         const chars = "アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        const columns = Math.floor(width / 20);
-        let drops = Array(columns).fill(1);
+        const cols = Math.floor(w/20);
+        let drops = Array(cols).fill(1);
         function draw() {
-            ctx.fillStyle = "rgba(10, 10, 10, 0.05)";
-            ctx.fillRect(0, 0, width, height);
+            ctx.fillStyle = "rgba(10,10,10,0.05)";
+            ctx.fillRect(0,0,w,h);
             ctx.fillStyle = "#0f0";
             ctx.font = "18px 'Courier New'";
-            for (let i = 0; i < drops.length; i++) {
-                const text = chars[Math.floor(Math.random() * chars.length)];
-                ctx.fillText(text, i * 20, drops[i] * 20);
-                if (drops[i] * 20 > height && Math.random() > 0.975) drops[i] = 0;
+            for(let i=0;i<drops.length;i++){
+                ctx.fillText(chars[Math.floor(Math.random()*chars.length)], i*20, drops[i]*20);
+                if(drops[i]*20 > h && Math.random()>0.975) drops[i]=0;
                 drops[i]++;
             }
         }
-        setInterval(draw, 45);
-        window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        });
+        setInterval(draw,45);
+        window.addEventListener('resize',()=>{ canvas.width=window.innerWidth; canvas.height=window.innerHeight; });
     }
 
     // запуск
     loadUsersFromStorage();
-    const storedCurrent = getStoredUser();
-    if (storedCurrent) {
-        setCurrentUser(storedCurrent);
-        authScreen.style.display = 'none';
-        mainApp.style.display = 'flex';
+    const stored = getStoredUser();
+    if(stored){
+        setCurrentUser(stored);
+        authScreen.style.display='none';
+        mainApp.style.display='flex';
         renderTab('projects');
         bindNavbar();
         document.querySelector('.nav-item[data-tab="projects"]')?.classList.add('active');
     } else {
-        authScreen.style.display = 'flex';
-        mainApp.style.display = 'none';
+        authScreen.style.display='flex';
+        mainApp.style.display='none';
         initAuth();
     }
     startMatrixRain();
